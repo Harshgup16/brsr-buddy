@@ -2,48 +2,12 @@ import { BRSRData } from '@/types/brsr';
 import { Button } from '@/components/ui/button';
 import { FileDown, Printer, Leaf } from 'lucide-react';
 import { useRef } from 'react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 interface ReportPreviewProps { data: BRSRData; }
 
 const ReportPreview = ({ data }: ReportPreviewProps) => {
   const { sectionA, sectionB, sectionC } = data;
   const reportRef = useRef<HTMLDivElement>(null);
-
-  const handleDownloadPDF = async () => {
-    if (!reportRef.current) return;
-    
-    const canvas = await html2canvas(reportRef.current, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff'
-    });
-    
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = canvas.width;
-    const imgHeight = canvas.height;
-    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-    
-    let heightLeft = imgHeight * ratio;
-    let position = 0;
-    
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth * ratio, imgHeight * ratio);
-    heightLeft -= pdfHeight;
-    
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight * ratio;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth * ratio, imgHeight * ratio);
-      heightLeft -= pdfHeight;
-    }
-    
-    pdf.save(`BRSR_Report_${sectionA.companyDetails.name || 'Company'}_${sectionA.companyDetails.financialYear || 'FY'}.pdf`);
-  };
 
   const handlePrint = () => window.print();
 
@@ -58,12 +22,11 @@ const ReportPreview = ({ data }: ReportPreviewProps) => {
         <h2 className="text-2xl font-display font-bold text-foreground">Report Preview</h2>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handlePrint}><Printer className="w-4 h-4 mr-2" />Print</Button>
-          <Button variant="brsr" size="sm" onClick={handleDownloadPDF}><FileDown className="w-4 h-4 mr-2" />Download PDF</Button>
+          <Button variant="brsr" size="sm" onClick={handlePrint}><FileDown className="w-4 h-4 mr-2" />Save as PDF</Button>
         </div>
       </div>
 
       <div ref={reportRef} className="bg-white text-gray-900 rounded-xl shadow-2xl overflow-hidden animate-slide-up print:shadow-none">
-        {/* Header */}
         <div className="bg-gradient-to-r from-emerald-600 to-green-700 text-white p-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Leaf className="w-8 h-8" />
@@ -75,7 +38,6 @@ const ReportPreview = ({ data }: ReportPreviewProps) => {
         </div>
 
         <div className="p-8 space-y-8 text-sm">
-          {/* SECTION A */}
           <section>
             <h2 className="text-xl font-bold text-green-700 border-b-2 border-green-700 pb-2 mb-6">SECTION A: GENERAL DISCLOSURES</h2>
             <h3 className="text-lg font-semibold text-green-600 mb-4">I. Details of the listed entity</h3>
@@ -125,14 +87,12 @@ const ReportPreview = ({ data }: ReportPreviewProps) => {
             </table>
           </section>
 
-          {/* SECTION B */}
           <section>
             <h2 className="text-xl font-bold text-green-700 border-b-2 border-green-700 pb-2 mb-6">SECTION B: MANAGEMENT AND PROCESS DISCLOSURES</h2>
             <p className="mb-4"><span className="font-semibold">Highest Governance Body:</span> {sectionB.highestGovernanceBody || '-'}</p>
             <p className="mb-4"><span className="font-semibold">Director Statement:</span> {sectionB.directorStatement || '-'}</p>
           </section>
 
-          {/* SECTION C */}
           <section>
             <h2 className="text-xl font-bold text-green-700 border-b-2 border-green-700 pb-2 mb-6">SECTION C: PRINCIPLE WISE PERFORMANCE</h2>
             
