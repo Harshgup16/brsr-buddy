@@ -1,6 +1,6 @@
 import { BRSRData } from '@/types/brsr';
 import { Button } from '@/components/ui/button';
-import { FileDown, Printer, Leaf } from 'lucide-react';
+import { FileDown, Printer, Leaf, FileText } from 'lucide-react';
 import { useRef } from 'react';
 
 interface ReportPreviewProps { data: BRSRData; }
@@ -10,6 +10,49 @@ const ReportPreview = ({ data }: ReportPreviewProps) => {
   const reportRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => window.print();
+
+  const handleDownloadDOC = () => {
+    if (!reportRef.current) return;
+    
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>BRSR Report - ${sectionA.companyDetails.name || 'Company'}</title>
+        <style>
+          body { font-family: Arial, sans-serif; font-size: 12pt; line-height: 1.5; margin: 40px; }
+          h1 { color: #007A3D; text-align: center; font-size: 18pt; }
+          h2 { color: #007A3D; font-size: 14pt; border-bottom: 2px solid #007A3D; padding-bottom: 5px; }
+          h3 { color: #10b981; font-size: 12pt; }
+          table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+          th { background-color: #007A3D; color: white; padding: 8px; text-align: left; border: 1px solid #ddd; }
+          td { padding: 8px; border: 1px solid #ddd; }
+          .header { text-align: center; background: linear-gradient(to right, #10b981, #059669); color: white; padding: 20px; margin-bottom: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>BUSINESS RESPONSIBILITY & SUSTAINABILITY REPORT</h1>
+          <p style="font-size: 16pt; font-weight: bold;">${sectionA.companyDetails.name || 'Company Name'}</p>
+          <p>Financial Year: ${sectionA.companyDetails.financialYear || '2023-24'}</p>
+          <p style="font-size: 10pt;">As per SEBI Annexure I Format</p>
+        </div>
+        ${reportRef.current.innerHTML}
+      </body>
+      </html>
+    `;
+    
+    const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `BRSR_Report_${sectionA.companyDetails.name || 'Company'}_${sectionA.companyDetails.financialYear || 'FY'}.doc`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const calcPercentage = (part: number, total: number): string => {
     if (!total) return '0%';
@@ -23,6 +66,7 @@ const ReportPreview = ({ data }: ReportPreviewProps) => {
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handlePrint}><Printer className="w-4 h-4 mr-2" />Print</Button>
           <Button variant="brsr" size="sm" onClick={handlePrint}><FileDown className="w-4 h-4 mr-2" />Save as PDF</Button>
+          <Button variant="secondary" size="sm" onClick={handleDownloadDOC}><FileText className="w-4 h-4 mr-2" />Download DOC</Button>
         </div>
       </div>
 
