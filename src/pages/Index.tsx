@@ -31,20 +31,24 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background print:bg-white print:min-h-0">
       {/* Background gradient */}
-      <div className="fixed inset-0 bg-gradient-to-br from-secondary/5 via-background to-primary/5 pointer-events-none" />
+      <div className="fixed inset-0 bg-gradient-to-br from-secondary/5 via-background to-primary/5 pointer-events-none print:hidden" />
       
-      <Header />
+      <div className="print:hidden">
+        <Header />
+      </div>
       
-      <div className="pt-16">
-        <TabNavigation 
-          activeTab={activeTab} 
-          onTabChange={setActiveTab} 
-          hasData={!!brsrData} 
-        />
+      <div className="pt-16 print:pt-0">
+        <div className="print:hidden">
+          <TabNavigation 
+            activeTab={activeTab} 
+            onTabChange={setActiveTab} 
+            hasData={!!brsrData} 
+          />
+        </div>
         
-        <main className="relative pb-12">
+        <main className="relative pb-12 print:pb-0">
           {activeTab === 'upload' && (
             <UploadSection onDataExtracted={handleDataExtracted} />
           )}
