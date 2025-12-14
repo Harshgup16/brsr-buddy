@@ -277,3 +277,74 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-muted-foreground/50;
 }
+
+/* Print styles for PDF export */
+@media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print\\:hidden {
+    display: none !important;
+  }
+
+  .print\\:shadow-none {
+    box-shadow: none !important;
+  }
+
+  /* Force gradient header to print */
+  .bg-gradient-to-r {
+    background: linear-gradient(to right, #059669, #15803d) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Force emerald/green backgrounds */
+  .from-emerald-600 {
+    --tw-gradient-from: #059669 !important;
+  }
+  
+  .to-green-700 {
+    --tw-gradient-to: #15803d !important;
+  }
+
+  /* Force table header backgrounds */
+  .bg-green-700 {
+    background-color: #15803d !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .bg-green-50 {
+    background-color: #f0fdf4 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .bg-gray-100 {
+    background-color: #f3f4f6 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Ensure text colors print correctly */
+  .text-white {
+    color: white !important;
+  }
+
+  .text-green-700 {
+    color: #15803d !important;
+  }
+
+  .text-green-600 {
+    color: #059669 !important;
+  }
+}
